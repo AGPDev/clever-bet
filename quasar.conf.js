@@ -100,7 +100,9 @@ module.exports = function(/* ctx */) {
       importStrategy: 'auto',
 
       // Quasar plugins
-      plugins: []
+      plugins: [],
+
+      cssAddon: true
     },
 
     // animations: 'all', // --- includes all animations
