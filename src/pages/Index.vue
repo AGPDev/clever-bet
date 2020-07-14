@@ -1,10 +1,10 @@
 <script>
 const configInit = {
-  balance: '0.00440129',
+  balance: '0.00554881',
   bet: '0.00002000',
-  chance: 49.5,
-  multiply: 100,
-  payout: 2
+  chance: '49.5',
+  multiply: '100',
+  payout: '2'
 }
 
 export default {
@@ -15,6 +15,7 @@ export default {
       bets: [],
       losses: null,
       persistence: null,
+      stake: Object.assign({}, configInit),
       columns: [
         { name: 'id', align: 'center', label: '#', field: 'id' },
         { name: 'amount', align: 'center', label: 'Bet Amount', field: 'amount' },
@@ -28,22 +29,18 @@ export default {
     }
   },
 
-  created () {
-    this.stake = Object.assign({}, configInit)
-  },
-
   methods: {
     submit () {
       const bets = []
-      const multiply = (this.stake.multiply / this.stake.multiply) * 2
-      const payout = this.stake.payout
+      const multiply = 1 + parseFloat(this.stake.multiply) / 100
+      const payout = parseFloat(this.stake.payout)
       const bodds = (1 - 1 / payout * 0.99)
       let currentBet = parseFloat(this.stake.bet)
       let currentBalance = parseFloat(this.stake.balance)
       let currentStreakOdds = bodds
 
-      for (let id = 1; id < 2000; id++) {
-        if (currentBet > (currentBalance * 2)) break
+      for (let id = 1; id < 1501; id++) {
+        if (currentBet > (currentBalance + currentBet)) break
 
         currentBalance -= currentBet
         bets.push({
@@ -58,8 +55,13 @@ export default {
       }
 
       this.losses = bets.length - 1
-      this.persistence = this.losses / payout
+      this.persistence = (this.losses / payout).toFixed(2)
       this.bets = bets
+    },
+
+    setPayout (chance) {
+      this.stake.payout = (99 / parseFloat(chance)).toFixed(4)
+      this.stake.multiply = (100 / (this.stake.payout - 1)).toFixed(2)
     }
   }
 }
@@ -108,6 +110,7 @@ q-page(class="q-gutter-md bg-blue-grey-14")
           )
 
           q-input(
+            @input="setPayout"
             v-model="stake.chance"
             input-class="text-right"
             label="Chance"
@@ -147,7 +150,7 @@ q-page(class="q-gutter-md bg-blue-grey-14")
             | The persistence of this strategy is <span class="text-weight-bold text-red">{{ persistence }}</span> (Minimum 8 Recommended)
 
   .row.justify-center
-    .col-12.col-lg-6.col-xl-5
+    .col-12.col-sm-8.col-md-6.col-lg-6.col-xl-5
       q-table(
         :data="bets"
         :columns="columns"
