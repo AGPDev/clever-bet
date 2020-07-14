@@ -154,13 +154,11 @@ q-page(class="q-gutter-md bg-blue-grey-14")
       q-table(
         :data="bets"
         :columns="columns"
-        :virtual-scroll-slice-size="30"
         :pagination="pagination"
         card-class="bg-blue-grey-10"
         title="Your Bets"
         dense
         dark
         hide-pagination
-        virtual-scroll
       )
 </template>
