@@ -1,47 +1,163 @@
 <script>
 const configInit = {
-  balance: null,
-  bet: null,
-  chance: '49.5',
-  multiply: '2',
-  payout: '2'
+  balance: '0.00440129',
+  bet: '0.00002000',
+  chance: 49.5,
+  multiply: 100,
+  payout: 2
 }
 
 export default {
   name: 'PageIndex',
 
   data () {
-    return {}
+    return {
+      bets: [],
+      losses: null,
+      persistence: null,
+      columns: [
+        { name: 'id', align: 'center', label: '#', field: 'id' },
+        { name: 'amount', align: 'center', label: 'Bet Amount', field: 'amount' },
+        { name: 'afterLoss', align: 'center', label: 'After Loss', field: 'afterLoss' },
+        { name: 'streakOdds', align: 'center', label: 'Losing Streak Odds', field: 'streakOdds' }
+        // { name: 'profit', align: 'center', label: 'Profit If Win', field: 'profit' },
+      ],
+      pagination: {
+        rowsPerPage: 0
+      }
+    }
   },
 
   created () {
     this.stake = Object.assign({}, configInit)
+  },
+
+  methods: {
+    submit () {
+      const bets = []
+      const multiply = (this.stake.multiply / this.stake.multiply) * 2
+      const payout = this.stake.payout
+      const bodds = (1 - 1 / payout * 0.99)
+      let currentBet = parseFloat(this.stake.bet)
+      let currentBalance = parseFloat(this.stake.balance)
+      let currentStreakOdds = bodds
+
+      for (let id = 1; id < 2000; id++) {
+        if (currentBet > (currentBalance * 2)) break
+
+        currentBalance -= currentBet
+        bets.push({
+          id,
+          amount: currentBet.toFixed(8),
+          afterLoss: currentBalance.toFixed(8),
+          streakOdds: (currentStreakOdds * 100).toFixed(8) + '%'
+        })
+
+        currentStreakOdds *= bodds
+        currentBet *= multiply
+      }
+
+      this.losses = bets.length - 1
+      this.persistence = this.losses / payout
+      this.bets = bets
+    }
   }
 }
 </script>
 
 <template lang="pug">
-q-page(class="flex flex-center bg-blue-grey-14")
-  q-card(class="q-pa-md bg-blue-grey-10")
-    q-input(
-      v-model="this.stake.balance"
-      fill-mask="0"
-      input-class="text-right"
-      label="Balance"
-      mask="#.########"
-      reverse-fill-mask
-      dark
-      filled
-    )
+q-page(class="q-gutter-md bg-blue-grey-14")
+  .row.justify-center.q-pt-md
+    .col-auto
+      q-card(class="q-py-lg bg-blue-grey-10")
+        .row.q-gutter-md.justify-center
+          q-input(
+            v-model="stake.balance"
+            fill-mask="0"
+            input-class="text-right"
+            label="Balance"
+            mask="#.########"
+            bottom-slots
+            dark
+            filled
+            no-error-icon
+            reverse-fill-mask
+          )
 
-    q-input(
-      v-model="this.stake.bet"
-      fill-mask="0"
-      input-class="text-right"
-      label="Bet Initial"
-      mask="#.########"
-      reverse-fill-mask
-      dark
-      filled
-    )
+          q-input(
+            v-model="stake.bet"
+            fill-mask="0"
+            input-class="text-right"
+            label="Bet Initial"
+            mask="#.########"
+            bottom-slots
+            dark
+            filled
+            no-error-icon
+            reverse-fill-mask
+          )
+
+          q-input(
+            v-model="stake.payout"
+            input-class="text-right"
+            label="Payout"
+            bottom-slots
+            dark
+            filled
+            no-error-icon
+          )
+
+          q-input(
+            v-model="stake.chance"
+            input-class="text-right"
+            label="Chance"
+            suffix="%"
+            bottom-slots
+            dark
+            filled
+            no-error-icon
+          )
+
+          q-input(
+            v-model="stake.multiply"
+            input-class="text-right"
+            label="Multiply on Loss"
+            suffix="%"
+            bottom-slots
+            dark
+            filled
+            no-error-icon
+          )
+
+          .col-12.text-center
+            q-btn(
+              @click="submit"
+              label="Calculate"
+              color="deep-purple"
+              no-caps
+            )
+
+  .row.justify-center
+    .col-auto(v-if="losses && persistence")
+      q-card(class="q-pa-lg bg-blue-grey-10")
+        .row.q-gutter-md.justify-center.text-white
+          .col-12
+            | Your strategy supports <span class="text-weight-bold text-red">{{ losses }}</span> losses
+          .col-12
+            | The persistence of this strategy is <span class="text-weight-bold text-red">{{ persistence }}</span> (Minimum 8 Recommended)
+
+  .row.justify-center
+    .col-12.col-lg-6.col-xl-5
+      q-table(
+        :data="bets"
+        :columns="columns"
+        :virtual-scroll-slice-size="30"
+        :pagination="pagination"
+        card-class="bg-blue-grey-10"
+        title="Your Bets"
+        dense
+        dark
+        hide-pagination
+        virtual-scroll
+      )
 </template>
