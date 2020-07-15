@@ -1,7 +1,7 @@
 <script>
 const configInit = {
-  balance: '0.00554881',
-  bet: '0.00002000',
+  balance: '0.00000000',
+  bet: '0.00000000',
   chance: '49.5',
   multiply: '100',
   payout: '2'

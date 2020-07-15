@@ -1,9 +1,9 @@
 {
-  "name": "bet",
-  "version": "0.0.1",
-  "description": "A Quasar Framework app",
-  "productName": "Quasar App",
-  "author": "Anderson Guilherme Porto <anderson.porto@bistwobis.com.br>",
+  "name": "clever-ber",
+  "version": "1.0.0",
+  "description": "Helper for Crypto Gamblers",
+  "productName": "Clever Bet",
+  "author": "AGPDev <anderson.porto@agpdev.com>",
   "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.vue ./",
